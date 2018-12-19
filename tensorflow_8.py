@@ -1,5 +1,4 @@
-print('로그 남기기')
-print('learning rate 재조정')
+print('학습 데이터 저장')
 
 import tensorflow as tf
 import random
@@ -44,8 +43,10 @@ opt = tf.train.AdamOptimizer(learning_rate=_lr)
 train_op = opt.minimize(loss, global_step=gs)
 
 sess.run(tf.global_variables_initializer())
-
 file_writer = tf.summary.FileWriter('logs', sess.graph)
+
+saver = tf.train.Saver()
+saver.restore(sess, 'training/simple.ckpt-10000')
 
 print('학습 시작..')
 while True:
@@ -60,10 +61,13 @@ while True:
     else:
         current_lr = 0.01
 
-    summary = sess.run(sum_op, feed_dict={_sum_loss:eval_loss, _sum_lr:current_lr})
-    file_writer.add_summary(summary, eval_gs)
+    if eval_gs % 1000 == 0:
+        summary = sess.run(sum_op, feed_dict={_sum_loss:eval_loss, _sum_lr:current_lr})
+        file_writer.add_summary(summary, eval_gs)
 
-    if eval_gs == 10000:
+        saver.save(sess, 'training/simple.ckpt-%d' % eval_gs)
+
+    if eval_gs == 20000:
         break
 
 print('결과 확인.. ')
