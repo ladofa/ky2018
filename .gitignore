@@ -2,6 +2,7 @@
 logs
 training
 export
+mnist_mini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
